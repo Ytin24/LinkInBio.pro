@@ -1,0 +1,26 @@
+# Build artifacts
+bin/
+obj/
+out/
+
+# Environment files
+.env
+appsettings.Development.json
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+
+# OS files
+.DS_Store
+Thumbs.db

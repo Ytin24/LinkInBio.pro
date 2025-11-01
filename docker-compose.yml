@@ -4,6 +4,7 @@ services:
   postgres:
     image: postgres:15-alpine
     container_name: linkinbio-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: linkinbio
       POSTGRES_USER: postgres
@@ -18,21 +19,55 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - backend
 
   backend:
     build:
       context: ./LinkInBio.Backend
       dockerfile: Dockerfile
     container_name: linkinbio-backend
+    restart: unless-stopped
     environment:
       DATABASE_URL: "Host=postgres;Database=linkinbio;Username=postgres;Password=postgres"
       JWT_SECRET: "your-super-secret-jwt-key-change-this-in-production-min-32-chars"
-      PORT: 5000
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5000
     ports:
       - "5000:5000"
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - backend
+
+  # Development backend with hot reload (optional - use with: docker-compose --profile dev up)
+  backend-dev:
+    build:
+      context: ./LinkInBio.Backend
+      dockerfile: Dockerfile.dev
+    container_name: linkinbio-backend-dev
+    environment:
+      DATABASE_URL: "Host=postgres;Database=linkinbio;Username=postgres;Password=postgres"
+      JWT_SECRET: "dev-secret-key-not-for-production"
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./LinkInBio.Backend:/app
+      - /app/bin
+      - /app/obj
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+    profiles:
+      - dev
+
+networks:
+  backend:
+    driver: bridge
 
 volumes:
   postgres_data:
