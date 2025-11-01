@@ -4,6 +4,7 @@ open System
 open Giraffe
 open Microsoft.AspNetCore.Http
 open LinkInBio.Backend.Models.DTOs
+open LinkInBio.Backend.Database.DbContext
 open LinkInBio.Backend.Services.AnalyticsService
 open LinkInBio.Backend.Database.DbContext
 
@@ -13,7 +14,7 @@ let private getUserIdFromToken (ctx: HttpContext) : Guid option =
     | false, _ -> None
     | true, authHeader ->
         let token = authHeader.ToString().Replace("Bearer ", "")
-        match Services.AuthService.validateToken token with
+        match AuthService.validateToken token with
         | Ok userId -> Some userId
         | Error _ -> None
 
@@ -46,7 +47,7 @@ let trackClick : HttpHandler =
             match profiles with
             | [] -> return! RequestErrors.NOT_FOUND "Link not found" next ctx
             | profileId :: _ ->
-                let! result = AnalyticsService.trackClick request profileId
+                let! result = Services.AnalyticsService.trackClick request profileId
 
                 match result with
                 | Ok () -> return! Successful.OK {| message = "Click tracked successfully" |} next ctx
@@ -81,7 +82,7 @@ let getAnalytics (profileId: string) : HttpHandler =
                                 | _ -> None
                             | _ -> None
 
-                        let! result = AnalyticsService.getAnalytics profileGuid dateRange
+                        let! result = Services.AnalyticsService.getAnalytics profileGuid dateRange
 
                         match result with
                         | Ok analytics -> return! Successful.OK analytics next ctx
@@ -103,7 +104,7 @@ let exportAnalytics (profileId: string) : HttpHandler =
                     if not hasAccess then
                         return! RequestErrors.FORBIDDEN "Access denied" next ctx
                     else
-                        let! result = AnalyticsService.exportToCSV profileGuid None
+                        let! result = Services.AnalyticsService.exportToCSV profileGuid None
 
                         match result with
                         | Ok csv ->
@@ -133,7 +134,7 @@ let getTopLinks (profileId: string) : HttpHandler =
                             |> Option.bind (fun s -> match Int32.TryParse(s) with true, v -> Some v | _ -> None)
                             |> Option.defaultValue 10
 
-                        let! result = AnalyticsService.getTopLinks profileGuid limit
+                        let! result = Services.AnalyticsService.getTopLinks profileGuid limit
 
                         match result with
                         | Ok topLinks ->

@@ -6,23 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Models -->
-    <Compile Include="Models/Domain.fs" />
-    <Compile Include="Models/DTOs.fs" />
-
-    <!-- Database -->
-    <Compile Include="Database/DbContext.fs" />
-
-    <!-- Services -->
-    <Compile Include="Services/AuthService.fs" />
-    <Compile Include="Services/AnalyticsService.fs" />
-
-    <!-- Handlers -->
-    <Compile Include="Handlers/AuthHandlers.fs" />
-    <Compile Include="Handlers/ProfileHandlers.fs" />
-    <Compile Include="Handlers/LinkHandlers.fs" />
-    <Compile Include="Handlers/AnalyticsHandlers.fs" />
-
     <!-- Entry point -->
     <Compile Include="Program.fs" />
 
@@ -33,10 +16,6 @@
 
   <ItemGroup>
     <PackageReference Include="Giraffe" Version="6.4.0" />
-    <PackageReference Include="Npgsql.FSharp" Version="5.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
   </ItemGroup>
 
 </Project>

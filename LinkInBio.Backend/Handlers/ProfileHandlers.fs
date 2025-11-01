@@ -4,6 +4,7 @@ open System
 open Giraffe
 open Microsoft.AspNetCore.Http
 open LinkInBio.Backend.Models.Domain
+open LinkInBio.Backend.Database.DbContext
 open LinkInBio.Backend.Models.DTOs
 open LinkInBio.Backend.Database.DbContext
 

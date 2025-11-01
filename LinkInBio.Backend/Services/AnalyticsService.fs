@@ -4,6 +4,7 @@ open System
 open LinkInBio.Backend.Models.Domain
 open LinkInBio.Backend.Models.DTOs
 open LinkInBio.Backend.Database.DbContext
+open LinkInBio.Backend.Database.DbContext
 
 // Track link click
 let trackClick (request: ClickEventRequest) (profileId: Guid) =

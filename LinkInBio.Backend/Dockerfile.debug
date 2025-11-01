@@ -1,0 +1,29 @@
+# Debug Dockerfile to see actual build errors
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /app
+
+# Copy project file
+COPY LinkInBio.Backend.fsproj ./
+
+# Show project file content
+RUN echo "=== Project file content ===" && cat LinkInBio.Backend.fsproj
+
+# Restore with verbose output
+RUN dotnet restore LinkInBio.Backend.fsproj -v detailed
+
+# Copy all source files
+COPY Models/ ./Models/
+COPY Database/ ./Database/
+COPY Services/ ./Services/
+COPY Handlers/ ./Handlers/
+COPY Program.fs ./
+COPY appsettings.json ./
+
+# Show directory structure
+RUN echo "=== Directory structure ===" && find . -type f
+
+# Build with detailed output to see the error
+RUN dotnet build LinkInBio.Backend.fsproj -c Release -v detailed
+
+# Try to publish
+RUN dotnet publish LinkInBio.Backend.fsproj -c Release -o out -v detailed

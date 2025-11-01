@@ -7,6 +7,7 @@ open System.Text
 open Microsoft.IdentityModel.Tokens
 open LinkInBio.Backend.Models.Domain
 open LinkInBio.Backend.Models.DTOs
+open LinkInBio.Backend.Database.DbContext
 
 // JWT Configuration
 let private jwtSecret =
@@ -83,7 +84,7 @@ let validateToken (token: string) : Result<Guid, string> =
 // Register new user
 let register (request: RegisterRequest) =
     async {
-        let! existingUsers = Database.DbContext.Users.findByEmail request.Email
+        let! existingUsers = Users.findByEmail request.Email
 
         match List.isEmpty existingUsers with
         | false -> return Error "Email already registered"
@@ -98,7 +99,7 @@ let register (request: RegisterRequest) =
             }
 
             try
-                let! _ = Database.DbContext.Users.create newUser
+                let! _ = Users.create newUser
                 let token = generateToken newUser
 
                 let response = {
@@ -116,7 +117,7 @@ let register (request: RegisterRequest) =
 // Login user
 let login (request: LoginRequest) =
     async {
-        let! users = Database.DbContext.Users.findByEmail request.Email
+        let! users = Users.findByEmail request.Email
 
         match users with
         | [] -> return Error "Invalid email or password"
@@ -142,7 +143,7 @@ let getUserFromToken (token: string) =
         match validateToken token with
         | Error msg -> return Error msg
         | Ok userId ->
-            let! users = Database.DbContext.Users.findById userId
+            let! users = Users.findById userId
 
             match users with
             | [] -> return Error "User not found"
